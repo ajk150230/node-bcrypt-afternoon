@@ -3,6 +3,8 @@ const express = require('express');
 const session = require('express-session');
 const massive = require('massive');
 const authCtrl = require('./controllers/authController');
+const teaCtrl = require('./controllers/treasureController')
+const auth = require('./middleware/authMiddleware');
 
 const PORT = 5555;
 
@@ -26,5 +28,12 @@ app.use(
 );
 
 app.post('/auth/register', authCtrl.register);
+app.post('/auth/login', authCtrl.login);
+app.get('/auth/logout', authCtrl.logout);
+
+app.get('/api/treasure/dragon', teaCtrl.dragonTreasure)
+app.get('/api/treasure/user', auth.usersOnly, teaCtrl.getUserTreasure);
+app.post('/api/treasure/user', auth.usersOnly, teaCtrl.addUserTreasure);
+app.get('/api/treasure/all', auth.usersOnly, auth.adminsOnly, teaCtrl.getAllTreasure);
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));

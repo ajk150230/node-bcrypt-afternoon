@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import './Header.css';
-import axios from 'axios'
+import React, { Component } from "react";
+import "./Header.css";
+import axios from "axios";
 
 export default class Header extends Component {
   constructor() {
     super();
     this.state = {
-      username: '',
-      password: '',
+      username: "",
+      password: "",
       isAdmin: false,
     };
     this.register = this.register.bind(this);
@@ -31,30 +31,35 @@ export default class Header extends Component {
   login() {
     const { username, password } = this.state;
     axios
-      .post('/auth/login', { username, password })
-      .then(user => {
+      .post("/auth/login", { username, password })
+      .then((user) => {
         this.props.updateUser(user.data);
-        this.setState({ username: '', password: '' });
+        this.setState({ username: "", password: "" });
       })
-      .catch(err => alert(err.response.request.response));
+      .catch((err) => alert(err.response.request.response));
   }
 
   register() {
-    const { username, password, isAdmin } = this.state
+    const { username, password, isAdmin } = this.state;
     axios
-      .post('/auth/register', { username, password, isAdmin })
-      .then(res => {
-        this.setState({ username: '', password: '' })
-        this.props.updateUser(res.data)
+      .post("/auth/register", { username, password, isAdmin })
+      .then((res) => {
+        this.setState({ username: "", password: "" });
+        this.props.updateUser(res.data);
       })
-      .catch(err => {
-        this.setState({ username: '', password: '' })
-        alert(err.response.request.response)
-      })
+      .catch((err) => {
+        this.setState({ username: "", password: "" });
+        alert(err.response.request.response);
+      });
   }
 
   logout() {
-     
+    axios
+      .get('/auth/logout')
+      .then(() => {
+        this.props.updateUser({});
+      })
+      .catch(err => console.log(err));
   }
 
   render() {
@@ -71,30 +76,34 @@ export default class Header extends Component {
             </button>
           </div>
         ) : (
-            <div className="loginContainer">
+          <div className="loginContainer">
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => this.handleUsernameInput(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => this.handlePasswordInput(e.target.value)}
+            />
+            <div className="adminCheck">
               <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={e => this.handleUsernameInput(e.target.value)}
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={e => this.handlePasswordInput(e.target.value)}
-              />
-              <div className="adminCheck">
-                <input type="checkbox" id="adminCheckbox" onChange={() => this.toggleAdmin()} /> <span> Admin </span>
-              </div>
-              <button onClick={this.login}>Log In</button>
-              <button onClick={this.register} id="reg">
-                Register
-            </button>
+                type="checkbox"
+                id="adminCheckbox"
+                onChange={() => this.toggleAdmin()}
+              />{" "}
+              <span> Admin </span>
             </div>
-          )}
+            <button onClick={this.login}>Log In</button>
+            <button onClick={this.register} id="reg">
+              Register
+            </button>
+          </div>
+        )}
       </div>
     );
   }
 }
-
